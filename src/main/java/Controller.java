@@ -18,6 +18,9 @@ public class Controller {
     private URL location;
 
     @FXML
+    private Button analyze;
+
+    @FXML
     private TextField zipField;
 
     @FXML
@@ -56,6 +59,13 @@ public class Controller {
         File file = dc.showDialog(null);
 
         outDirectory.setText(file.getAbsolutePath());
+    }
+
+    @FXML
+    void analyzing(ActionEvent event) {
+        Analizator a = new Analizator();
+
+        a.analyzing(zipField.getText(), fileOptions.getText(), outDirectory.getText());
     }
 
     @FXML

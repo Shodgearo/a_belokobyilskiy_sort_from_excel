@@ -9,7 +9,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
       <TextField fx:id="zipField" layoutX="88.0" layoutY="59.0" prefHeight="25.0" prefWidth="241.0" />
@@ -33,5 +32,6 @@
             <Font size="19.0" />
          </font>
       </Label>
+      <Button fx:id="analyze" layoutX="119.0" layoutY="303.0" mnemonicParsing="false" onAction="#analyzing" prefHeight="60.0" prefWidth="180.0" text="Анализ" />
    </children>
 </AnchorPane>

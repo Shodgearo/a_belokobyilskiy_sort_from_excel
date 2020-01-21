@@ -20,7 +20,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="a_belokobyilskiy_sort_from_excel" target="1.5" />
+      <module name="a_belokobyilskiy_sort_from_excel" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
