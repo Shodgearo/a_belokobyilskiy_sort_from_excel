@@ -1,5 +1,6 @@
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -7,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -17,7 +19,7 @@ public class Analizator {
     public void analyzing(String zip_path, String tools_path, String out_path) {
         File fileZ = new File(zip_path);
         File fileT = new File(tools_path);
-        File fileO = new File(out_path + "/res");
+        File fileO = new File(out_path);
         Workbook book;
         FileOutputStream fout;
 
@@ -34,6 +36,24 @@ public class Analizator {
             } else return;
 
             // todo Считываем колонки из fileT и создаём папки под кажду колонку
+            Sheet sheet = book.getSheet(book.getSheetName(0)); // Берём лист
+            Row row = sheet.getRow(0); // Берём строку с именами столбцов
+            Cell cell;
+            LinkedList<String> listOfCellsName = new LinkedList<>();
+            File newDirectory;
+
+            for (int i = 1; i <= row.getLastCellNum(); i++) {
+                cell = row.getCell(i);
+
+                if (cell != null && cell.getStringCellValue() != null){
+                    listOfCellsName.add(row.getCell(i).getStringCellValue());
+
+                    String path = out_path + "/" + listOfCellsName.getLast();
+
+                    newDirectory = new File(path);
+                    newDirectory.mkdir();
+                }
+            }
 
             // todo Считываем значение из ячеек и создаём под каждое уникальное значение подпапку
 
@@ -43,8 +63,6 @@ public class Analizator {
             String name;
             long size;
             Random r = new Random();
-//
-//            fileO.mkdir();
 //
 //            FileUtils.copyFile(fileT, fileO);
 
