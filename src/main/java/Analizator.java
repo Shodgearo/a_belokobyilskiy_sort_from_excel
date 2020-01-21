@@ -29,9 +29,11 @@ public class Analizator {
             return;
 
         try (ZipInputStream zin = new ZipInputStream(new FileInputStream(fileZ))) {
-            if (fileT.getName().split("\\.")[fileT.getName().split("\\.").length - 1].equals("xls")) {
+            String arr[] = fileT.getName().split("\\.");
+
+            if (arr[arr.length - 1].equals("xls")) {
                 book = new HSSFWorkbook(new FileInputStream(fileT));
-            } else if (fileT.getName().split("\\.")[fileT.getName().split("\\.").length - 1].equals("xlsx")){
+            } else if (arr[arr.length - 1].equals("xlsx")){
                 book = new XSSFWorkbook(new FileInputStream(fileT));
             } else return;
 
