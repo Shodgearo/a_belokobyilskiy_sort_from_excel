@@ -3,12 +3,30 @@
     <output-path>$PROJECT_DIR$/out/artifacts/JavaFXApp</output-path>
     <properties id="javafx-properties">
       <options>
-        <option name="appClass" value="sample.Main" />
+        <option name="appClass" value="Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="deb" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="JavaFXApp.jar">
+      <element id="archive" name="Sort.jar">
         <element id="module-output" name="a_belokobyilskiy_sort_from_excel" />
+        <element id="directory" name="libs">
+          <element id="library" level="project" name="Maven: org.apache.poi:poi:4.1.1" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.13" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-collections4:4.4" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-math3:3.6.1" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml:4.1.1" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml-schemas:4.1.1" />
+          <element id="library" level="project" name="Maven: org.apache.xmlbeans:xmlbeans:3.1.0" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-compress:1.19" />
+          <element id="library" level="project" name="Maven: com.github.virtuald:curvesapi:1.06" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
+        </element>
       </element>
     </root>
   </artifact>
