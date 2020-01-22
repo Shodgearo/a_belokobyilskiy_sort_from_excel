@@ -1,9 +1,6 @@
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -16,75 +13,122 @@ import java.util.zip.ZipInputStream;
 public class Analizator {
 
     // Метод разархивирования и сортировки файлов
-    public void analyzing(String zip_path, String tools_path, String out_path) {
+    void analyzing(String zip_path, String tools_path, String out_path) {
         File fileZ = new File(zip_path);
         File fileT = new File(tools_path);
         File fileO = new File(out_path);
         Workbook book;
         FileOutputStream fout;
 
-        System.out.println(Arrays.toString(fileT.getName().split("\\.")));
-
+        // Если настроек не достаточно, то выходим
         if (!fileZ.exists() || !fileO.exists() || !fileT.exists())
             return;
 
         try (ZipInputStream zin = new ZipInputStream(new FileInputStream(fileZ))) {
             String arr[] = fileT.getName().split("\\.");
 
-            if (arr[arr.length - 1].equals("xls")) {
-                book = new HSSFWorkbook(new FileInputStream(fileT));
-            } else if (arr[arr.length - 1].equals("xlsx")){
-                book = new XSSFWorkbook(new FileInputStream(fileT));
-            } else return;
+            switch (arr[arr.length - 1]) {
+                case "xls":
+                    book = new HSSFWorkbook(new FileInputStream(fileT));
+                    break;
+                case "xlsx":
+                    book = new XSSFWorkbook(new FileInputStream(fileT));
+                    break;
+                default:
+                    return;
+            }
 
-            // todo Считываем колонки из fileT и создаём папки под кажду колонку
             Sheet sheet = book.getSheet(book.getSheetName(0)); // Берём лист
             Row row = sheet.getRow(0); // Берём строку с именами столбцов
             Cell cell;
-            LinkedList<String> listOfCellsName = new LinkedList<>();
             File newDirectory;
 
+            // Создаём папки с названием ячеек в шапке
             for (int i = 1; i <= row.getLastCellNum(); i++) {
                 cell = row.getCell(i);
 
                 if (cell != null && cell.getStringCellValue() != null){
-                    listOfCellsName.add(row.getCell(i).getStringCellValue());
-
-                    String path = out_path + "/" + listOfCellsName.getLast();
+                    String path = out_path + "/" + row.getCell(i).getStringCellValue();
 
                     newDirectory = new File(path);
                     newDirectory.mkdir();
                 }
             }
 
-            // todo Считываем значение из ячеек и создаём под каждое уникальное значение подпапку
-
-            // todo Копируем из архива файлы в нужные подпапки
-
             ZipEntry entry;
-            String name;
-            long size;
-            Random r = new Random();
-//
-//            FileUtils.copyFile(fileT, fileO);
 
-//            while((entry = zin.getNextEntry()) != null) {
-//                fout = new FileOutputStream(fileO.getAbsoluteFile() + "/" + String.valueOf(r.nextInt()) + ".jpg");
-//
-//                name = entry.getName(); // получим название файла
-//                size = entry.getSize();  // получим его размер в байтах
-//                System.out.printf("File name: %s \t File size: %d \n", name, size);
-//
-//                // распаковка
-//                for (int c = zin.read(); c != -1; c = zin.read()) {
-//                    fout.write(c);
-//                }
-//
-//                fout.flush();
-//                zin.closeEntry();
-//            }
+            while((entry = zin.getNextEntry()) != null) {
+                // Если это не файл, то делать нечего
+                if (!entry.getName().contains("."))
+                    continue;
+
+                String arr_elements_path[] = entry.getName().split("/");
+                String file_name = arr_elements_path[arr_elements_path.length - 1];
+
+                // Ищем строку в экселе с этим фалом
+                Row row_search = searchByName(file_name, sheet);
+
+                if (row_search == null)
+                    continue;
+
+                fout = new FileOutputStream(fileO.getAbsoluteFile() + "/" + file_name);
+
+                // распаковка
+                for (int c = zin.read(); c != -1; c = zin.read()) {
+                    fout.write(c);
+                }
+
+                for (int i = 1; i <= row.getLastCellNum(); i++) {
+                    cell = row_search.getCell(i);
+                    Cell cellX = row.getCell(i);
+
+                    if (cellX == null)
+                        continue;
+
+                    String head_name = cellX.getStringCellValue();
+
+                    if (cell != null
+                            && cell.getCellType() == CellType.STRING
+                            && !cell.getStringCellValue().equals(" ")) {
+                        File file1 = new File(fileO.getAbsoluteFile() + "/" + file_name);
+                        File file2 = new File(fileO.getAbsoluteFile()
+                                + "/"
+                                + head_name
+                                + "/"
+                                + cell.getStringCellValue()
+                                + "/"
+                                + file_name);
+
+                        FileUtils.copyFile(file1, file2);
+                    }
+                }
+
+                // Удаляем временный файл
+                new File(fileO.getAbsoluteFile() + "/" + file_name).delete();
+
+                fout.flush();
+                zin.closeEntry();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private Row searchByName(String file_name, Sheet sheet) {
+        Cell cell;
+        Row row;
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            row = sheet.getRow(i);
+            cell = row.getCell(0);
+
+            // Если такой файл есть в екселе, то возвращаем строку
+            if (cell != null && cell.getStringCellValue().equals(file_name)) {
+                return row;
+            }
+        }
+
+        // Если ничего не нашли, то идём дальше
+        return null;
     }
 }
